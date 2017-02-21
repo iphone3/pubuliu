@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			ul{
+				list-style: none;
+				width: 1000px;
+				margin: 20px auto;
+			}
+			li{
+				width: 240px;
+				float: left;
+				margin-right: 10px;
+			}
+			li div{
+				width: 220px;
+				border: 1px solid gray;
+				padding: 10px;
+				margin-bottom: 10px;
+			}
+			img{
+				display: block;
+				border: 0;
+				width: 220px;
+			}
+		</style>
+		
+		<script src="ajax.js"></script>
+		<script>
+			window.onload = function(){
+				var oBt = document.getElementById("bt1");
+				var aLi = document.getElementsByTagName('li');
+				
+				oBt.onclick = function(){
+					ajax('get', './data/getData.php', '', function(response){
+						var data = JSON.parse(response);
+						for(var i=0; i<data.length; i++){
+							var temp = data[i];
+							
+							// 获取最短的li
+							var index = getSortLi();
+							
+							// 创建节点
+							var oDiv = document.createElement('div');
+							var oImg = document.createElement('img');
+							var oP = document.createElement('p');
+							
+							// 设置节点
+							/* 问题:
+							 * 图片加载是需要耗费时间的，如果没有加载，其图片高度就是0，那么在获取最短li时即不精确
+							 * 解决: 
+							 * 	因为数据中有图片的原始大小，即可以预先将图片大小设置好(不管图片什么时候加载)
+							 * 
+							 * 宽高比例来设置图片大小
+							 * 	"width":"800","height":"534",
+							 *  width: 220px;  
+							 */
+							oImg.src = temp.preview;
+							// 设置图片的高度
+							oImg.style.width = '220px';
+							if(temp.height == 0){
+								// 预设值
+								oImg.style.height = '200px';
+							} else {
+								oImg.style.height = (220 / temp.width) * temp.height + 'px';	
+							}
+							console.log(getComputedStyle(oImg).height);
+							oP.innerHTML = temp.title;
+							
+							// 添加节点
+							oDiv.appendChild(oImg);
+							oDiv.appendChild(oP);
+							aLi[index].appendChild(oDiv);
+						}
+					});
+				}
+				
+				// 获取最短的li
+				function getSortLi(){
+					var index = 0;
+					var height = aLi[0].offsetHeight;
+					
+					for(var i=1; i<aLi.length; i++){
+						if(aLi[i].offsetHeight < height){
+							height = aLi[i].offsetHeight;
+							index = i;
+						}
+					}
+					
+					return index;
+				}
+			}
+		</script>
+	</head>
+	
+	<body>
+		<input type="button" value="获取" id="bt1" />
+		
+		<ul id="list">
+			<li></li>
+			
+			<li></li>
+			
+			<li></li>
+			
+			<li></li>
+			
+			
+			<!--<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+				
+				<div>
+					<img src="data/2.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/2.jpeg" />
+					<p>显瘦蕾丝长款长袖连衣裙</p>
+				</div>
+				
+				<div>
+					<img src="data/2.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中韩版大码显瘦蕾丝长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>-->
+			
+			
+		</ul>
+	</body>
+</html>

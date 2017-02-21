@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script>
+			window.onload = function(){
+				var oBt = document.getElementById("bt1");
+				
+				oBt.onclick = function(){
+					var request = new XMLHttpRequest();
+					
+					request.open('post', './data/02-data.php', true);
+					
+					// 请求头(post默认是没有设置的)
+					request.setRequestHeader('content-type', 'application/x-www-form-urlencoded');
+					// 参数: 李明
+					request.send('name=李明');
+					
+					request.onreadystatechange = function(){
+						if(request.readyState == 4){
+							if(request.status == 200){
+								alert(request.responseText);
+							} else {
+								alert(request.status);
+							}
+						}
+					}
+				}
+			}
+		</script>
+	</head>
+	
+	<body>
+		<input type="button" value="获取" id="bt1" />
+	</body>
+</html>

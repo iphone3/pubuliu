@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="ajax.js"></script>
+		<script>
+			window.onload = function(){
+				var oBt = document.getElementById("bt1");
+				
+				oBt.onclick = function(){
+					// 获取数据
+					// get
+//					ajax('get', './data/01-data.php', 'name=李明', function(response){
+//						// 获取到数据的具体操作
+//						alert(response);
+//					});
+
+					// post
+					ajax('post', './data/02-data.php', 'name=李明', function(response){
+						alert(response);
+					});
+				}
+			}
+		</script>
+	</head>
+	
+	<body>
+		<input type="button" value="获取" id="bt1" />
+	</body>
+</html>

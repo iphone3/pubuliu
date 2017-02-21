@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			ul{
+				list-style: none;
+				width: 1000px;
+				margin: 20px auto 0;
+			}
+			li{
+				width: 240px;
+				float: left;
+				margin-right: 10px;
+			}
+			li div{
+				width: 220px;
+				border: 1px solid gray;
+				padding: 10px;
+				margin-bottom: 10px;
+			}
+			img{
+				display: block;
+				border: 0;
+				width: 220px;
+			}
+		</style>
+		
+		<script src="ajax.js"></script>
+		<script>
+			window.onload = function(){
+				var oBt = document.getElementById("bt1");
+				var aLi = document.getElementsByTagName('li');
+				var oList = document.getElementById('list');
+				var page = 1; 	// 默认从1开始
+				var isLoad = false;	// 开始已经在加载数据
+				
+				
+				// 调用获取列表数据
+				getList();
+				
+				
+				// 获取列表数据
+				function getList(){
+					console.log('正在获取数据....');
+					
+					// 传递页码参数
+					ajax('get', './data/getData.php', 'page='+page, function(response){
+						var data = JSON.parse(response);
+						for(var i=0; i<data.length; i++){
+							var temp = data[i];
+							
+							// 获取最短的li
+							var index = getSortLi();
+							
+							// 创建节点
+							var oDiv = document.createElement('div');
+							var oImg = document.createElement('img');
+							var oP = document.createElement('p');
+							
+							// 设置节点
+							/* 问题:
+							 * 图片加载是需要耗费时间的，如果没有加载，其图片高度就是0，那么在获取最短li时即不精确
+							 * 解决: 
+							 * 	因为数据中有图片的原始大小，即可以预先将图片大小设置好(不管图片什么时候加载)
+							 * 
+							 * 宽高比例来设置图片大小
+							 * 	"width":"800","height":"534",
+							 *  width: 220px;  
+							 */
+							oImg.src = temp.preview;
+							// 设置图片的高度
+							oImg.style.width = '220px';
+							if(temp.height == 0){
+								// 预设值
+								oImg.style.height = '200px';
+							} else {
+								oImg.style.height = (220 / temp.width) * temp.height + 'px';	
+							}
+							// console.log(getComputedStyle(oImg).height);
+							oP.innerHTML = temp.title;
+							
+							// 添加节点
+							oDiv.appendChild(oImg);
+							oDiv.appendChild(oP);
+							aLi[index].appendChild(oDiv);
+						}
+						
+						
+						// 数据已经获取完成，可以获取新的数据
+						isLoad = true;
+					});
+				}
+				
+				
+				// 打开页面 false   --> 加载完成   true   --> 滑动到底部(即开始加载数据) flase
+				
+				// 滚动到底部，即改变页码page，重新获取新的数据	
+				window.onscroll = function(){
+					// 获取最短的li
+					var index = getSortLi();
+					var oLiHeight = aLi[index].offsetHeight;
+					// ul顶部距离
+					var top = oList.offsetTop;
+					
+					// 滚动条滚动距离
+					var srollTop = document.documentElement.scrollTop || document.body.scrollTop;
+					
+					// 窗口高度
+					var screenH = document.documentElement.clientHeight;
+					
+					// 滚动内容大小 = li高度 + ul顶部距离
+					if(top+oLiHeight < srollTop+screenH){
+						// 如果在获取数据，即跳过此操作
+						if(isLoad){
+							isLoad = false;
+							// 改变页码
+							page++;
+							// 重新获取新的数据
+							getList();
+						}
+						
+					}
+				}
+				
+				
+				// 获取最短的li
+				function getSortLi(){
+					var index = 0;
+					var height = aLi[0].offsetHeight;
+					
+					for(var i=1; i<aLi.length; i++){
+						if(aLi[i].offsetHeight < height){
+							height = aLi[i].offsetHeight;
+							index = i;
+						}
+					}
+					
+					return index;
+				}
+			}
+		</script>
+	</head>
+	
+	<body>
+		<ul id="list">
+			<li></li>
+			
+			<li></li>
+			
+			<li></li>
+			
+			<li></li>
+			
+			
+			<!--<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+				
+				<div>
+					<img src="data/2.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/2.jpeg" />
+					<p>显瘦蕾丝长款长袖连衣裙</p>
+				</div>
+				
+				<div>
+					<img src="data/2.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中韩版大码显瘦蕾丝长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>
+			
+			<li>
+				<div>
+					<img src="data/1.jpeg" />
+					<p>2017年春装新款  韩版大码显瘦蕾丝打底衫中长款长袖连衣裙</p>
+				</div>
+			</li>-->
+			
+			
+		</ul>
+	</body>
+</html>
